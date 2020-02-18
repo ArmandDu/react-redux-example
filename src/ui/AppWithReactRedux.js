@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from "react";
-import { connect, Provider } from "react-redux";
+import { Provider, connect } from "react-redux";
 import { combineReducers, createStore } from "redux";
 
 /** Example with react-redux
@@ -47,26 +47,26 @@ import { combineReducers, createStore } from "redux";
 /** Create the reducers */
 
 const productReducer = (products = [], action) => {
-	switch (action.type) {
-		case "FETCH_PRODUCTS":
-			return action.payload;
-		default:
-			return products;
-	}
+  switch (action.type) {
+    case "FETCH_PRODUCTS":
+      return action.payload;
+    default:
+      return products;
+  }
 };
 
 const cartReducer = (cart = [], action) => {
-	switch (action.type) {
-		case "ADD_TO_CART":
-			return [...cart, action.payload];
-		default:
-			return cart;
-	}
+  switch (action.type) {
+    case "ADD_TO_CART":
+      return [...cart, action.payload];
+    default:
+      return cart;
+  }
 };
 
 const rootReducer = combineReducers({
-	products: productReducer,
-	cart: cartReducer,
+  products: productReducer,
+  cart: cartReducer
 });
 
 const store = createStore(rootReducer);
@@ -74,89 +74,87 @@ const store = createStore(rootReducer);
 /** Components */
 
 class App extends Component {
-	render() {
-		return (
-			<div>
-				<Provider store={store}>
-					<Cart />
-					<ProductList />
-				</Provider>
-			</div>
-		);
-	}
+  render() {
+    return (
+      <div>
+        <Provider store={store}>
+          <Cart />
+          <ProductList />
+        </Provider>
+      </div>
+    );
+  }
 }
 
 const mapStateToProps = state => {
-	return {
-		products: state.products,
-	};
+  return {
+    products: state.products
+  };
 };
 
 const mapDispatchToProps = dispatch => {
-	return {
-		fetchProducts: products =>
-			dispatch({
-				type: "FETCH_PRODUCTS",
-				payload: products,
-			}),
-		addToCart: product =>
-			dispatch({
-				type: "ADD_TO_CART",
-				payload: product.id,
-			}),
-	};
+  return {
+    fetchProducts: products =>
+      dispatch({
+        type: "FETCH_PRODUCTS",
+        payload: products
+      }),
+    addToCart: product =>
+      dispatch({
+        type: "ADD_TO_CART",
+        payload: product.id
+      })
+  };
 };
 
-const enhance = connect(
-	mapStateToProps,
-	mapDispatchToProps
-);
+const enhance = connect(mapStateToProps, mapDispatchToProps);
 
 const ProductList = enhance(
-	class extends Component {
-		componentDidMount() {
-			const { fetchProducts } = this.props;
+  class extends Component {
+    componentDidMount() {
+      const { fetchProducts } = this.props;
 
-			import("../data/products")
-				.then(c => c.default)
-				.then(products => {
-					fetchProducts(products);
-				});
-		}
+      import("../data/products")
+        .then(c => c.default)
+        .then(products => {
+          fetchProducts(products);
+        });
+    }
 
-		render() {
-			const { products, addToCart } = this.props;
-			return (
-				<div>
-					<ul>
-						{products.map(p => (
-							<li key={p.id}>
-								{p.title} <button onClick={() => addToCart(p)}>add to cart</button>
-							</li>
-						))}
-					</ul>
-				</div>
-			);
-		}
-	}
+    render() {
+      const { products, addToCart } = this.props;
+      return (
+        <div>
+          <ul>
+            {products.map(p => (
+              <li key={p.id}>
+                {p.title}{" "}
+                <button onClick={() => addToCart(p)}>add to cart</button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      );
+    }
+  }
 );
 
 const mapStateToCartProps = state => {
-	return {
-		cart: state.cart,
-	};
+  return {
+    cart: state.cart
+  };
 };
 
 const enhanceCart = connect(mapStateToCartProps);
 
 const Cart = enhanceCart(function(props) {
-	const { cart } = props;
+  const { cart } = props;
 
-	return (
-		<Fragment>
-			<div>shopping list count: {cart.length}</div>
-		</Fragment>
-	);
+  return (
+    <Fragment>
+      <div>shopping list count: {cart.length}</div>
+    </Fragment>
+  );
 });
 
 export default App;

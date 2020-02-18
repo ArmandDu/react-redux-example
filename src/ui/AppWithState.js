@@ -25,62 +25,63 @@ import React, { Component, Fragment } from "react";
  *
  */
 class App extends Component {
-	state = {
-		cart: [],
-		products: [],
-	};
+  state = {
+    cart: [],
+    products: []
+  };
 
-	componentDidMount() {
-		import("../data/products")
-			.then(p => p.default)
-			.then(products => {
-				this.setState({ products });
-			});
-	}
+  componentDidMount() {
+    import("../data/products")
+      .then(p => p.default)
+      .then(products => {
+        this.setState({ products });
+      });
+  }
 
-	handleAddToCart = product => {
-		this.setState(prev => ({
-			cart: [...prev.cart, product.id],
-		}));
-	};
+  handleAddToCart = product => {
+    this.setState(prev => ({
+      cart: [...prev.cart, product.id]
+    }));
+  };
 
-	render() {
-		const { products, cart } = this.state;
+  render() {
+    const { products, cart } = this.state;
 
-		return (
-			<div>
-				<Cart cart={cart} />
-				<ProductList products={products} onAddToCart={this.handleAddToCart} />
-			</div>
-		);
-	}
+    return (
+      <div>
+        <Cart cart={cart} />
+        <ProductList products={products} onAddToCart={this.handleAddToCart} />
+      </div>
+    );
+  }
 }
 
 class ProductList extends Component {
-	render() {
-		const { products, onAddToCart } = this.props;
-		return (
-			<div>
-				<ul>
-					{products.map(p => (
-						<li key={p.id}>
-							{p.title} <button onClick={() => onAddToCart(p)}>add to cart</button>
-						</li>
-					))}
-				</ul>
-			</div>
-		);
-	}
+  render() {
+    const { products, onAddToCart } = this.props;
+    return (
+      <div>
+        <ul>
+          {products.map(p => (
+            <li key={p.id}>
+              {p.title}{" "}
+              <button onClick={() => onAddToCart(p)}>add to cart</button>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  }
 }
 
 function Cart(props) {
-	const { cart } = props;
+  const { cart } = props;
 
-	return (
-		<Fragment>
-			<div>shopping list count: {cart.length}</div>
-		</Fragment>
-	);
+  return (
+    <Fragment>
+      <div>shopping list count: {cart.length}</div>
+    </Fragment>
+  );
 }
 
 export default App;

@@ -44,103 +44,105 @@ import { combineReducers, createStore } from "redux";
 /** Create the reducers */
 
 const productReducer = (products = [], action) => {
-	switch (action.type) {
-		case "FETCH_PRODUCTS":
-			return action.payload;
-		default:
-			return products;
-	}
+  switch (action.type) {
+    case "FETCH_PRODUCTS":
+      return action.payload;
+    default:
+      return products;
+  }
 };
 
 const cartReducer = (cart = [], action) => {
-	switch (action.type) {
-		case "ADD_TO_CART":
-			return [...cart, action.payload];
-		default:
-			return cart;
-	}
+  switch (action.type) {
+    case "ADD_TO_CART":
+      return [...cart, action.payload];
+    default:
+      return cart;
+  }
 };
 
 const rootReducer = combineReducers({
-	products: productReducer,
-	cart: cartReducer,
+  products: productReducer,
+  cart: cartReducer
 });
 
 /** Components */
 
 class App extends Component {
-	state = {
-		store: createStore(rootReducer),
-	};
+  state = {
+    store: createStore(rootReducer)
+  };
 
-	componentDidMount() {
-		const { store } = this.state;
+  componentDidMount() {
+    const { store } = this.state;
 
-		//subscribe to the store so when it updates, we update our component;
-		store.subscribe(() => {
-			this.setState({
-				storeState: store.getState(),
-			});
-		});
-	}
+    //subscribe to the store so when it updates, we update our component;
+    store.subscribe(() => {
+      this.setState({
+        storeState: store.getState()
+      });
+    });
+  }
 
-	render() {
-		const { store } = this.state;
+  render() {
+    const { store } = this.state;
 
-		return (
-			<div>
-				<Cart store={store} />
-				<ProductList store={store} />
-			</div>
-		);
-	}
+    return (
+      <div>
+        <Cart store={store} />
+        <ProductList store={store} />
+      </div>
+    );
+  }
 }
 
 class ProductList extends Component {
-	componentDidMount() {
-		const { store } = this.props;
+  componentDidMount() {
+    const { store } = this.props;
 
-		import("../data/products")
-			.then(p => p.default)
-			.then(products => {
-				store.dispatch({ type: "FETCH_PRODUCTS", payload: products });
-			});
-	}
+    import("../data/products")
+      .then(p => p.default)
+      .then(products => {
+        store.dispatch({ type: "FETCH_PRODUCTS", payload: products });
+      });
+  }
 
-	handleAddToCart = product => {
-		const { store } = this.props;
+  handleAddToCart = product => {
+    const { store } = this.props;
 
-		store.dispatch({ type: "ADD_TO_CART", payload: product.id });
-	};
+    store.dispatch({ type: "ADD_TO_CART", payload: product.id });
+  };
 
-	render() {
-		const { store } = this.props;
-		const { products } = store.getState();
+  render() {
+    const { store } = this.props;
+    const { products } = store.getState();
 
-		return (
-			<div>
-				<ul>
-					{products.map(p => (
-						<li key={p.id}>
-							{p.title}{" "}
-							<button onClick={() => this.handleAddToCart(p)}>add to cart</button>
-						</li>
-					))}
-				</ul>
-			</div>
-		);
-	}
+    return (
+      <div>
+        <ul>
+          {products.map(p => (
+            <li key={p.id}>
+              {p.title}{" "}
+              <button onClick={() => this.handleAddToCart(p)}>
+                add to cart
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  }
 }
 
 function Cart(props) {
-	const { store } = props;
-	const { cart } = store.getState();
+  const { store } = props;
+  const { cart } = store.getState();
 
-	return (
-		<Fragment>
-			<div>shopping list count: {cart.length}</div>
-		</Fragment>
-	);
+  return (
+    <Fragment>
+      <div>shopping list count: {cart.length}</div>
+    </Fragment>
+  );
 }
 
 export default App;
